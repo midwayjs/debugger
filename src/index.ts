@@ -22,7 +22,9 @@ export const debugWrapper = (options: IOptions) => {
         '--inspect=9229'
       ];
       const debugInfo = getDebugPath();
-      execArgv.push(...debugInfo.extensions)
+      if (debugInfo.extensions) {
+        execArgv.push(...debugInfo.extensions);
+      }
       child.process = fork(
         debugInfo.path,
         [
