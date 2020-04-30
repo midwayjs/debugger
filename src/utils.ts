@@ -1,12 +1,12 @@
 
 import { writeFileSync, readFileSync } from 'fs';
 import { tmpdir } from 'os';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 
 // 进程间传递数据
 export const sendData = (pro, result) => {
   const id = result && result.id || getRandomId();
-  const tmpData = tmpdir() + 'data' + id;
+  const tmpData = join(tmpdir(), 'data' + id);
   writeFileSync(tmpData, JSON.stringify(result));
   pro.send({ type: 'bigData', id });
 }
@@ -23,7 +23,7 @@ export const onMessage = (pro, cb) => {
 
 // 进程间获取大数据
 export const getData = (id) => {
-  const tmpData = tmpdir() + 'data' + id;
+  const tmpData = join(tmpdir(), 'data' + id);
   return JSON.parse(readFileSync(tmpData).toString());
 }
 
