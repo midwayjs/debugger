@@ -2,6 +2,7 @@ export interface IOptions {
   file: string;
   debug?: boolean;
   export?: string;
+  exit?: boolean;
 }
 
 export interface IChild {

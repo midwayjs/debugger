@@ -52,6 +52,9 @@ export const debugWrapper = (options: IOptions) => {
           }
         } else if (msg.type === 'childExit') {
           child = null;
+          if (options.exit) {
+            process.exit();
+          }
         }
       });
       process.on('SIGINT', clearDebug);
