@@ -51,10 +51,7 @@ export const debugWrapper = (options: IOptions) => {
             full.reject(msg.error);
           }
         } else if (msg.type === 'childExit') {
-          child = null;
-          if (options.exit) {
-            process.exit();
-          }
+          clearDebug();
         }
       });
       process.on('SIGINT', clearDebug);
@@ -71,7 +68,7 @@ export const debugWrapper = (options: IOptions) => {
 }
 
 export const clearDebug = () => {
-  if (child) {
+  if (child && child.process) {
     execSync('kill -9 ' + child.process.pid);
     child.process.kill();
     child = null;
