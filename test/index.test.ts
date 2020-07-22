@@ -32,6 +32,20 @@ describe('/test/index.test.ts', () => {
     clearDebug();
   });
 
+  it('debug result have function', async () => {
+    const fun = debugWrapper({
+      file: resolve(__dirname, './test.ts'),
+      export: 'testFunc',
+      debug: true
+    });
+    const result = await fun('name', '123');
+    const send = await waitDebug(9229);
+    assert(typeof send === 'function');
+    const fnucResult = await result.getResult('999');
+    assert(fnucResult === 'name123:999');
+    clearDebug();
+  });
+
 
   it('debug error', async () => {
     const fun = debugWrapper({

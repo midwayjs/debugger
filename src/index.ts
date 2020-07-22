@@ -46,6 +46,24 @@ export const debugWrapper = (options: IOptions) => {
           const full = child.invokeMap[msg.id];
           delete child.invokeMap[msg.id];
           if (msg.success) {
+            if (msg.function) {
+              msg.function.forEach(functionInfo => {
+                msg.result[functionInfo.name] = (...args) => {
+                  return new Promise((resolve, reject) => {
+                    const id = getRandomId();
+                    child.invokeMap[id] = { resolve, reject };
+                    sendData(child.process, {
+                      type: 'invokeInnerFunc',
+                      id,
+                      data: {
+                        funcId: functionInfo.id,
+                        args
+                      }
+                    });
+                  });
+                }
+              })
+            }
             full.resolve(msg.result);
           } else {
             full.reject(msg.error);

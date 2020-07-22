@@ -28,8 +28,8 @@ export const getData = (id) => {
 }
 
 // 获取随机Id
-export const getRandomId = () => {
-  return Date.now() + Math.random();
+export const getRandomId = (key?: string) => {
+  return Date.now() + Math.random() + (key || '');
 }
 
 export const getDebugPath = () => {
@@ -127,4 +127,8 @@ export const getFun = (options) => {
       return fun(...args);
     })
   }
+}
+
+export const getType = (data) => {
+  return ({}).toString.call(data).slice(8,-1).toLowerCase();
 }
