@@ -1,6 +1,6 @@
 {
   "name": "@midwayjs/debugger",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Currency Debug",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
