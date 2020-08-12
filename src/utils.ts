@@ -1,7 +1,9 @@
 
 import { writeFileSync, readFileSync } from 'fs';
-import { tmpdir } from 'os';
+import { tmpdir, platform } from 'os';
 import { resolve, join } from 'path';
+import { createServer } from 'net';
+import { execSync } from 'child_process';
 
 // 进程间传递数据
 export const sendData = (pro, result) => {
@@ -131,4 +133,44 @@ export const getFun = (options) => {
 
 export const getType = (data) => {
   return ({}).toString.call(data).slice(8,-1).toLowerCase();
+}
+
+export const checkPort = async (port): Promise<boolean> => {
+  return new Promise(resolve => {
+    const plat = platform();
+    if (plat != 'win32') {
+      try {
+        const portUse = execSync(`lsof -i:${port}`).toString().replace(/\n$/, '').split('\n');
+        if (portUse.length <= 1) {
+          return resolve(false);
+        }
+        portUse.shift();
+        const findUse = portUse.find(proc => {
+          const procList = proc.split(/\s+/);
+          const last = procList.pop();
+          if (last === '(LISTEN)') {
+            return true;
+          }
+        });
+        if (findUse) {
+          return resolve(true)
+        }
+      } catch {}
+    }
+
+    const server = createServer(socket => {
+      socket.write('check port\r\n');
+      socket.pipe(socket);
+    });
+    setTimeout(() => {
+      server.listen(port, '127.0.0.1');
+    }, 100);
+    server.on('error', () => {
+      resolve(true);
+    });
+    server.on('listening', () => {
+      server.close();
+      resolve(false);
+    });
+  });
 }

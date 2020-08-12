@@ -6,7 +6,7 @@ process.on('exit', () => {
 });
 const funcMap = {};
 (async () => {
-  await waitDebug(9229);
+  await waitDebug(config.port || 9229);
   onMessage(process, async msg => {
     let funcArgs = [];
     let func: any = () => {};

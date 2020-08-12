@@ -3,6 +3,7 @@ export interface IOptions {
   debug?: boolean;
   export?: string;
   exit?: boolean;
+  port?: string;
 }
 
 export interface IChild {
