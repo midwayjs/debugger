@@ -1,6 +1,6 @@
 {
   "name": "@midwayjs/debugger",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "description": "Currency Debug",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -22,11 +22,13 @@
   "devDependencies": {
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.2",
+    "fs-extra": "^9.0.1",
     "midway-bin": "1",
     "typescript": "^3.7.4"
   },
   "dependencies": {
     "node-fetch": "^2.6.0",
+    "ts-node": "^9.0.0",
     "ws": "^7.2.3"
   }
 }

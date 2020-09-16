@@ -61,4 +61,19 @@ describe('/test/index.test.ts', () => {
     }
     clearDebug();
   });
+
+  it('pure ts', async () => {
+    const fun = debugWrapper({
+      file: resolve(__dirname, './test.pure.ts'),
+      export: 'ts',
+      ts: true
+    });
+    try {
+      const result = await fun('debugger', '123456');
+      assert(result === 'debugger123456');
+    } catch {
+      //
+    }
+    clearDebug();
+  });
 });

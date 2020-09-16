@@ -1,10 +1,10 @@
 import { fork, execSync } from 'child_process';
 import { IOptions, IChild } from './interface';
-import { getRandomId, sendData, onMessage, getDebugPath, getFun, checkPort } from './utils';
+import { getRandomId, sendData, onMessage, getDebugPath, getFun, checkPort, vscodeSupport } from './utils';
 export * from './utils';
 let child: IChild;
 export const debugWrapper = (options: IOptions) => {
-  if (options.debug) {
+  if (options.debug || options.ts || options.child) {
     if (!child) {
       child = {
         isReady: false,
@@ -19,18 +19,22 @@ export const debugWrapper = (options: IOptions) => {
         invokeMap: {}
       };
       ;(async () => {
-
         const port = options.port || '9229';
-        const portIsUse: boolean = await checkPort(port);
-        if (portIsUse) {
-          console.log('\n\n');
-          console.log(`Debug port ${port} is in use`);
-          console.log('\n\n');
-        }
         
-        const execArgv = [
-          '--inspect=' + port
-        ];
+        const execArgv = [];
+        if (options.debug) {
+          const portIsUse: boolean = await checkPort(port);
+          if (portIsUse) {
+            console.log('\n\n');
+            console.log(`Debug port ${port} is in use`);
+            console.log('\n\n');
+          }
+          vscodeSupport(options);
+          execArgv.push(`--inspect=${port}`);
+        }
+        if (options.ts) {
+          execArgv.push('-r', 'ts-node/register');
+        }
         const debugInfo = getDebugPath();
         if (debugInfo.extensions) {
           execArgv.push(...debugInfo.extensions);
@@ -43,6 +47,7 @@ export const debugWrapper = (options: IOptions) => {
               export: options.export,
               file: options.file,
               port,
+              debug: options.debug
             }),
           ],
           {
@@ -114,7 +119,7 @@ const waitChildReady = () => {
     } else {
       setTimeout(() => {
         waitChildReady().then(resolve);
-      }, 100)
+      }, 50);
     }
   })
 }
