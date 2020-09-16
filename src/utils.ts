@@ -1,5 +1,5 @@
 
-import { writeFileSync, readFileSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import { tmpdir, platform } from 'os';
 import { resolve, join } from 'path';
 import { createServer } from 'net';
@@ -174,3 +174,38 @@ export const checkPort = async (port): Promise<boolean> => {
     });
   });
 }
+
+export const vscodeSupport = (options) => {
+  const isInVscode = process.env.TERM_PROGRAM === 'vscode';
+  if (!isInVscode) {
+    return;
+  }
+  
+  let vscodeVersion = [];
+  try {
+    vscodeVersion = execSync('code -v').toString().split('\n')[0].split('.');
+  } catch {}
+  if (!vscodeVersion || !Array.isArray(vscodeVersion) || vscodeVersion.length < 3) {
+    return;
+  }
+  const versionCount = vscodeVersion[0] * 100 + vscodeVersion[1];
+  const cwd = options?.cwd || process.cwd();
+  const vscodeSettingDir = join(cwd, '.vscode');
+  if (!existsSync(vscodeSettingDir)) {
+    mkdirSync(vscodeSettingDir);
+  }
+  let vscodeSettingFile = join(vscodeSettingDir, 'settings.json');
+  let vscodeSettingJson = {};
+  try {
+    vscodeSettingJson = JSON.parse(readFileSync(vscodeSettingFile).toString());
+  } catch {}
+  // 自动打开 autoAttach
+  vscodeSettingJson['debug.node.autoAttach'] = 'on';
+
+   // version 1.49.0 + 需要设置 usePreviewAutoAttach
+   if (versionCount >= 149) {
+    vscodeSettingJson['debug.javascript.usePreviewAutoAttach'] = false;
+  }
+
+  writeFileSync(vscodeSettingFile, JSON.stringify(vscodeSettingJson, null, 2));
+};

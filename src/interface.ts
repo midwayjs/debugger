@@ -4,6 +4,8 @@ export interface IOptions {
   export?: string;
   exit?: boolean;
   port?: string;
+  ts?: boolean;
+  child?: boolean;
 }
 
 export interface IChild {
