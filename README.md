@@ -1,13 +1,13 @@
 # debugger
 
-通用的debug包裹，让一个方法有了单步调试的能力，可以用在cli等情况下支持--debug参数启动单步调试。
+通用的 debug 包裹，让一个方法有了单步调试的能力，可以用在 cli 等情况下支持 `--debug` 参数启动单步调试。
 
 ### Usage
-```shell
-$ npm i @midwayjs/debugger --save
+```sh
+npm i @midwayjs/debugger --save
 ```
 
-```typescript
+```ts
 // function.ts
 import { debugWrapper } from '@midwayjs/debugger';
 export const fun = async (arg1, arg2) => {
