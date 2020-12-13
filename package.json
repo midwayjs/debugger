@@ -19,6 +19,9 @@
   ],
   "author": "Gao Yang <82163514@qq.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=12.13.0"
+  },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
     "@types/node": "^13.1.2",
