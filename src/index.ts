@@ -20,7 +20,7 @@ export const debugWrapper = (options: IOptions) => {
       };
       ;(async () => {
         const port = options.port || '9229';
-        
+
         const execArgv = [];
         if (options.debug) {
           const portIsUse: boolean = await checkPort(port);
@@ -53,7 +53,7 @@ export const debugWrapper = (options: IOptions) => {
           {
             cwd: process.cwd(),
             env: process.env,
-            execArgv 
+            execArgv
           }
         );
         onMessage(child.process, async msg => {
@@ -105,8 +105,24 @@ export const debugWrapper = (options: IOptions) => {
 
 export const clearDebug = () => {
   if (child && child.process) {
-    execSync('kill -9 ' + child.process.pid);
-    child.process.kill();
+    const pid = child.process.pid
+
+    try {
+      child.process.kill(pid, 0);
+      child.process.kill(pid);
+
+      try {
+        child.process.kill(pid, 0);
+        execSync('kill -9 ' + child.process.pid);
+      }
+      catch (ex) {
+        void 0;
+      }
+    }
+    catch (ex) {
+      void 0;
+    }
+
     child = null;
   }
 }
