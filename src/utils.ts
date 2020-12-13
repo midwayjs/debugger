@@ -10,7 +10,7 @@ export const sendData = (pro, result) => {
   const id = result && result.id || getRandomId();
   const tmpData = join(tmpdir(), 'data' + id);
   writeFileSync(tmpData, JSON.stringify(result));
-  pro.send({ type: 'bigData', id });
+  pro.send({ type: 'bigData', id, exitCode: result.exitCode });
 }
 
 // 处理消息
@@ -180,7 +180,7 @@ export const vscodeSupport = (options) => {
   if (!isInVscode) {
     return;
   }
-  
+
   let vscodeVersion = [];
   try {
     vscodeVersion = execSync('code -v').toString().split('\n')[0].split('.');

@@ -86,7 +86,7 @@ export const debugWrapper = (options: IOptions) => {
               full.reject(msg.error);
             }
           } else if (msg.type === 'childExit') {
-            clearDebug();
+            clearDebug(msg.exitCode);
           }
         });
         process.on('SIGINT', clearDebug);
@@ -103,7 +103,7 @@ export const debugWrapper = (options: IOptions) => {
   }
 }
 
-export const clearDebug = () => {
+export const clearDebug = (exitCode: number | undefined) => {
   if (child && child.process && child.process.pid > 0) {
     const pid = child.process.pid;
 
@@ -124,6 +124,10 @@ export const clearDebug = () => {
     }
 
     child = null;
+  }
+
+  if (exitCode > 0) {
+    process.exit(exitCode)
   }
 }
 
