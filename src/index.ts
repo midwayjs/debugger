@@ -105,7 +105,7 @@ export const debugWrapper = (options: IOptions) => {
   }
 }
 
-export const clearDebug = (exitCode: number | undefined) => {
+export const clearDebug = (exitCode?: number | undefined) => {
   if (child && child.process && child.process.pid > 0) {
     const pid = child.process.pid;
 
