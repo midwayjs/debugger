@@ -89,7 +89,9 @@ export const debugWrapper = (options: IOptions) => {
             clearDebug(msg.exitCode);
           }
         });
-        process.on('SIGINT', clearDebug);
+        process.on('SIGINT', () => {
+          clearDebug(process.exitCode);
+        });
       })();
     }
 
