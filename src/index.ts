@@ -104,7 +104,7 @@ export const debugWrapper = (options: IOptions) => {
 }
 
 export const clearDebug = () => {
-  if (child && child.process) {
+  if (child && child.process && child.process.pid > 0) {
     const pid = child.process.pid
 
     try {
@@ -113,7 +113,7 @@ export const clearDebug = () => {
 
       try {
         child.process.kill(pid, 0);
-        execSync('kill -9 ' + child.process.pid);
+        execSync('kill -9 ' + pid);
       }
       catch (ex) {
         void 0;
