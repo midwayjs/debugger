@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "midway-bin test --ts",
-    "cov": "midway-bin cov --ts",
+    "test": "midway-bin test --ts --runInBand",
+    "cov": "midway-bin cov --ts --runInBand",
     "build": "midway-bin build -c"
   },
   "keywords": [
@@ -20,11 +20,11 @@
   "author": "Gao Yang <82163514@qq.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=12.13.0"
+    "node": ">=10.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
-    "@types/node": "^13.1.2",
+    "@types/node": "^10.3.0",
     "fs-extra": "^9.0.1",
     "midway-bin": "1",
     "typescript": "^3.7.4"
