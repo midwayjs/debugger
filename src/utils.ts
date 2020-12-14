@@ -4,19 +4,20 @@ import { tmpdir, platform } from 'os';
 import { resolve, join } from 'path';
 import { createServer } from 'net';
 import { execSync } from 'child_process';
+import { IOptions } from './interface'
 
 // 进程间传递数据
-export const sendData = (pro, result) => {
+export const sendData = (proc: NodeJS.Process, result: any): void => {
   const id = result && result.id || getRandomId();
   const tmpData = join(tmpdir(), 'data' + id);
   writeFileSync(tmpData, JSON.stringify(result));
-  pro.send({ type: 'bigData', id });
+  proc.send({ type: 'bigData', id, exitCode: result.exitCode });
 }
 
 // 处理消息
-export const onMessage = (pro, cb) => {
-  pro.on('message', async msg => {
-    if (msg.type === 'bigData') {
+export const onMessage = (proc: NodeJS.Process, cb: (message: any) => any) => {
+  proc.on('message', async msg => {
+    if (msg && msg.type === 'bigData') {
       msg = getData(msg.id);
     }
     cb(msg);
@@ -24,7 +25,7 @@ export const onMessage = (pro, cb) => {
 }
 
 // 进程间获取大数据
-export const getData = (id) => {
+export const getData = (id: number | string): any => {
   const tmpData = join(tmpdir(), 'data' + id);
   return JSON.parse(readFileSync(tmpData).toString());
 }
@@ -45,7 +46,7 @@ export const getDebugPath = () => {
 }
 
 
-export function getWssUrl(port, type?: string, count?: number) {
+export function getWssUrl(port, type?: string, count?: number): Promise<string> {
   return new Promise((resolve, reject) => {
     count = count || 0;
     if (count > 100) {
@@ -56,10 +57,9 @@ export function getWssUrl(port, type?: string, count?: number) {
       fetch('http://127.0.0.1:' + port + '/json/list')
         .then(res => res.json())
         .then(debugInfo => {
-          const url = debugInfo[0][type || 'webSocketDebuggerUrl'] || '';
-          resolve(
-            url.replace('js_app.html?experiments=true&', 'inspector.html?')
-          );
+          const url: string = debugInfo[0][type || 'webSocketDebuggerUrl'] || '';
+          const ret = url.replace('js_app.html?experiments=true&', 'inspector.html?');
+          resolve(ret);
         })
         .catch(() => {
           getWssUrl(port, type, count + 1).then(resolve).catch(reject);
@@ -68,7 +68,7 @@ export function getWssUrl(port, type?: string, count?: number) {
   });
 }
 
-function debugWs(addr) {
+function debugWs(addr: string) {
   return new Promise(resolve => {
     const WebSocket = require('ws');
     const ws = new WebSocket(addr);
@@ -92,11 +92,11 @@ function debugWs(addr) {
         }
       });
       const send = (method, params?: any) => {
-        return new Promise(resolve => {
+        return new Promise(resolve2 => {
           const curId = currentId + 1;
           currentId = curId;
           cbMap[curId] = data => {
-            resolve(data);
+            resolve2(data);
           };
           const param: any = { id: curId, method };
           if (params) {
@@ -119,19 +119,19 @@ export async function waitDebug(port) {
   return debugWs(wssUrl);
 }
 
-export const getFun = (options) => {
-  let fun = require(options.file);
+export const getFun = (options: IOptions) => {
+  let fun: (...args: any[]) => unknown = require(options.file);
   if (options.export) {
     fun = fun[options.export];
   }
-  return (...args) => {
+  return (...args: any[]) => {
     return Promise.resolve(true).then(() => {
       return fun(...args);
     })
   }
 }
 
-export const getType = (data) => {
+export const getType = (data: unknown): string => {
   return ({}).toString.call(data).slice(8,-1).toLowerCase();
 }
 
@@ -180,7 +180,7 @@ export const vscodeSupport = (options) => {
   if (!isInVscode) {
     return;
   }
-  
+
   let vscodeVersion = [];
   try {
     vscodeVersion = execSync('code -v').toString().split('\n')[0].split('.');

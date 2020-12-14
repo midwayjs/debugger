@@ -2,6 +2,7 @@ import { fork, execSync } from 'child_process';
 import { IOptions, IChild } from './interface';
 import { getRandomId, sendData, onMessage, getDebugPath, getFun, checkPort, vscodeSupport } from './utils';
 export * from './utils';
+
 let child: IChild;
 export const debugWrapper = (options: IOptions) => {
   if (options.debug || options.ts || options.child) {
@@ -20,7 +21,7 @@ export const debugWrapper = (options: IOptions) => {
       };
       ;(async () => {
         const port = options.port || '9229';
-        
+
         const execArgv = [];
         if (options.debug) {
           const portIsUse: boolean = await checkPort(port);
@@ -53,7 +54,7 @@ export const debugWrapper = (options: IOptions) => {
           {
             cwd: process.cwd(),
             env: process.env,
-            execArgv 
+            execArgv
           }
         );
         onMessage(child.process, async msg => {
@@ -86,10 +87,12 @@ export const debugWrapper = (options: IOptions) => {
               full.reject(msg.error);
             }
           } else if (msg.type === 'childExit') {
-            clearDebug();
+            clearDebug(msg.exitCode);
           }
         });
-        process.on('SIGINT', clearDebug);
+        process.on('SIGINT', () => {
+          clearDebug(process.exitCode);
+        });
       })();
     }
 
@@ -103,11 +106,32 @@ export const debugWrapper = (options: IOptions) => {
   }
 }
 
-export const clearDebug = () => {
-  if (child && child.process) {
-    execSync('kill -9 ' + child.process.pid);
-    child.process.kill();
+export const clearDebug = (exitCode?: number | undefined): void => {
+  if (child && child.process && child.process.pid > 0) {
+    const pid = child.process.pid;
+
+    try {
+      child.process.kill(0);
+      child.process.kill();
+
+      try {
+        child.process.kill(0);
+        execSync('kill -9 ' + pid);
+      }
+      catch (ex) {
+        void 0;
+      }
+    }
+    catch (ex) {
+      void 0;
+    }
+
     child = null;
+  }
+
+  // 若子进程异常退出则本进程相同异常退出，以确保外层调用（jest，mocha等）能正确感知执行结果
+  if (exitCode > 0) {
+    process.exit(exitCode)
   }
 }
 

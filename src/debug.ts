@@ -2,7 +2,7 @@ import { waitDebug, sendData, onMessage, getFun, getType, getRandomId } from './
 const config = JSON.parse(process.argv[2]);
 const fun = getFun(config);
 process.on('exit', () => {
-  sendData(process, { type: 'childExit' });
+  sendData(process, { type: 'childExit', exitCode: process.exitCode });
 });
 const funcMap = {};
 (async () => {
@@ -46,3 +46,4 @@ const funcMap = {};
   });
   sendData(process, { type: 'ready' });
 })();
+
