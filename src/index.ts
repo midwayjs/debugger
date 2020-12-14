@@ -2,6 +2,7 @@ import { fork, execSync } from 'child_process';
 import { IOptions, IChild } from './interface';
 import { getRandomId, sendData, onMessage, getDebugPath, getFun, checkPort, vscodeSupport } from './utils';
 export * from './utils';
+
 let child: IChild;
 export const debugWrapper = (options: IOptions) => {
   if (options.debug || options.ts || options.child) {
@@ -105,7 +106,7 @@ export const debugWrapper = (options: IOptions) => {
   }
 }
 
-export const clearDebug = (exitCode?: number | undefined) => {
+export const clearDebug = (exitCode?: number | undefined): void => {
   if (child && child.process && child.process.pid > 0) {
     const pid = child.process.pid;
 
