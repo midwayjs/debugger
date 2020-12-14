@@ -111,11 +111,11 @@ export const clearDebug = (exitCode?: number | undefined): void => {
     const pid = child.process.pid;
 
     try {
-      child.process.kill(pid, 0);
-      child.process.kill(pid);
+      child.process.kill(0);
+      child.process.kill();
 
       try {
-        child.process.kill(pid, 0);
+        child.process.kill(0);
         execSync('kill -9 ' + pid);
       }
       catch (ex) {
