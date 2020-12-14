@@ -7,17 +7,17 @@ import { execSync } from 'child_process';
 import { IOptions } from './interface'
 
 // 进程间传递数据
-export const sendData = (pro, result) => {
+export const sendData = (proc: NodeJS.Process, result: any): void => {
   const id = result && result.id || getRandomId();
   const tmpData = join(tmpdir(), 'data' + id);
   writeFileSync(tmpData, JSON.stringify(result));
-  pro.send({ type: 'bigData', id, exitCode: result.exitCode });
+  proc.send({ type: 'bigData', id, exitCode: result.exitCode });
 }
 
 // 处理消息
-export const onMessage = (pro, cb) => {
-  pro.on('message', async msg => {
-    if (msg.type === 'bigData') {
+export const onMessage = (proc: NodeJS.Process, cb: (message: any) => any) => {
+  proc.on('message', async msg => {
+    if (msg && msg.type === 'bigData') {
       msg = getData(msg.id);
     }
     cb(msg);
@@ -25,7 +25,7 @@ export const onMessage = (pro, cb) => {
 }
 
 // 进程间获取大数据
-export const getData = (id) => {
+export const getData = (id: number | string): any => {
   const tmpData = join(tmpdir(), 'data' + id);
   return JSON.parse(readFileSync(tmpData).toString());
 }
