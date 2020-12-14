@@ -21,12 +21,6 @@ describe('/test/index.test.ts', () => {
     const result = await fun('name', '123');
     const send = await waitDebug(9229);
     assert(typeof send === 'function');
-    // try {
-    //   const send = await waitDebug(9230);
-    //   console.log('send', send);
-    // } catch (e) {
-    //   console.log('e', e);
-    // }
     const result2 = await fun('name', '1234');
     assert(result === 'name123' && result2 === 'name1234');
     clearDebug();
