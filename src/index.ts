@@ -129,6 +129,7 @@ export const clearDebug = (exitCode?: number | undefined): void => {
     child = null;
   }
 
+  // 若子进程异常退出则本进程相同异常退出，以确保外层调用（jest，mocha等）能正确感知执行结果
   if (exitCode > 0) {
     process.exit(exitCode)
   }
