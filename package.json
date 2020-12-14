@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^5.2.7",
-    "@types/node": "10.3.0",
+    "@types/node": "^10.3.0",
     "fs-extra": "^9.0.1",
     "midway-bin": "1",
     "typescript": "^3.7.4"
