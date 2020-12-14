@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "midway-bin test --ts",
-    "cov": "midway-bin cov --ts",
+    "test": "midway-bin test --ts --runInBand",
+    "cov": "midway-bin cov --ts --runInBand",
     "build": "midway-bin build -c"
   },
   "keywords": [
