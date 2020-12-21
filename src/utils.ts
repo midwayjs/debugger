@@ -128,6 +128,10 @@ export const getFun = (options: IOptions) => {
     return Promise.resolve(true).then(() => {
       return fun(...args);
     })
+    .catch(ex => {
+      console.log('[midway-debugger] got error:', ex.message);
+      throw ex
+    })
   }
 }
 
